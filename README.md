@@ -45,13 +45,13 @@
 - **Оплата картой/наличными (YooKassa).**  
 
 ## Use-Case диаграмма. Роль Администратор
-<img src="https://github.com/JulYakJul/CyberClubControla/GitPictures/Admin Use-case diagram.pngf?raw=true" width="800"/>
+![Admin Use-case Diagram](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Admin%20Use-case%20diagram.png)
 
 ## Use-Case диаграмма. Роль Управляющий
-<img src="https://github.com/JulYakJul/CyberClubControla/GitPictures/Manager Use-case diagram.pngf?raw=true" width="800"/>
+![Manager Use-case Diagram](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Manager%20Use-case%20diagram.png)
 
 ## Use-Case диаграмма. Роль Клиент
-<img src="https://github.com/JulYakJul/CyberClubControla/GitPictures/Client Use-case diagram.pngf?raw=true" width="800"/>
+![Client Use-case Diagram](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Client%20Use-case%20diagram.png)
 
 ## Результаты внедрения системы
 
