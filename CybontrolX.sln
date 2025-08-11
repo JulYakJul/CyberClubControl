@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CybontrolX", "CybontrolX\CybontrolX.csproj", "{0AF6F9A7-CABC-4E7F-B0C6-DF3C6713853C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CybontrolX_Tests", "CybontrolX_Tests\CybontrolX_Tests.csproj", "{546399CD-8C3A-4BFD-B289-A99A4A74BD1B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0AF6F9A7-CABC-4E7F-B0C6-DF3C6713853C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AF6F9A7-CABC-4E7F-B0C6-DF3C6713853C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AF6F9A7-CABC-4E7F-B0C6-DF3C6713853C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AF6F9A7-CABC-4E7F-B0C6-DF3C6713853C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{546399CD-8C3A-4BFD-B289-A99A4A74BD1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{546399CD-8C3A-4BFD-B289-A99A4A74BD1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{546399CD-8C3A-4BFD-B289-A99A4A74BD1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{546399CD-8C3A-4BFD-B289-A99A4A74BD1B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3BD51B84-5443-4C44-90D2-F320C1D8ECA1}
+	EndGlobalSection
+EndGlobal

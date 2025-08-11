@@ -1,0 +1,76 @@
+﻿@page
+@model CybontrolX.Pages.CreateClientModel
+@{
+    ViewData["Title"] = "Добавить клиента";
+}
+
+<div id="notificationPanel" class="notification-panel">
+    <div class="notification-content">
+        <span class="notification-text">@Model.NotificationMessage</span>
+        <span class="notification-close" onclick="closeNotification()">&times;</span>
+    </div>
+    <div class="notification-slider"></div>
+</div>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2>Добавить клиента</h2>
+        <form method="post" asp-page-handler="AddClient" onsubmit="showNotification(event)">
+            <div class="form-group mb-3">
+                <label asp-for="NewClient.Name" class="form-label">Имя клиента</label>
+                <input asp-for="NewClient.Name" class="form-control" />
+                <span asp-validation-for="NewClient.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-4">
+                <label asp-for="NewClient.PhoneNumber" class="form-label">Телефон</label>
+                <input asp-for="NewClient.PhoneNumber" class="form-control" />
+                <span asp-validation-for="NewClient.PhoneNumber" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Добавить клиента</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showNotification(event) {
+            localStorage.setItem('notificationShown', 'true');
+            displayNotification();
+        }
+
+        function closeNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            notificationPanel.classList.remove('visible');
+        }
+
+        function displayNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            var slider = notificationPanel.querySelector('.notification-slider');
+            notificationPanel.classList.add('visible');
+            var duration = 5000;
+            var startTime = Date.now();
+            var endTime = startTime + duration;
+
+            function updateSlider() {
+                var now = Date.now();
+                var remainingTime = endTime - now;
+                var percentage = (remainingTime / duration) * 100;
+                slider.style.width = percentage + '%';
+                if (remainingTime > 0) {
+                    requestAnimationFrame(updateSlider);
+                } else {
+                    slider.style.width = '0%';
+                    closeNotification();
+                }
+            }
+            requestAnimationFrame(updateSlider);
+        }
+
+        window.onload = function () {
+            if (localStorage.getItem('notificationShown') === 'true') {
+                displayNotification();
+                localStorage.removeItem('notificationShown');
+            }
+        }
+    </script>
+}

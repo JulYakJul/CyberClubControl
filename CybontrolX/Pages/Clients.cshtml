@@ -1,0 +1,175 @@
+﻿@page
+@model CybontrolX.Pages.ClientsModel
+@{
+    ViewData["Title"] = "Клиенты";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>@ViewData["Title"]</h1>
+    <a href="/CreateSession" class="btn btn-primary">Принять клиента</a>
+</div>
+
+<div class="d-flex align-items-center mb-3">
+    <input type="text" id="searchInput" class="form-control-search me-2" placeholder="Поиск по имени" />
+</div>
+
+<form id="deleteForm" method="post" asp-page-handler="DeleteClients" class="d-flex align-items-center mb-4">
+    <input type="hidden" id="SelectedClientIds" name="SelectedClientIds" />
+    <button id="selectAllButton" type="button" class="btn btn-small btn-purple me-2">Выбрать все</button>
+    <button id="editButton" type="button" class="btn btn-small btn-purple me-2" disabled>Изменить</button>
+    <button id="deleteButton" type="submit" class="btn btn-small btn-danger" disabled>Удалить</button>
+</form>
+
+<table class="table table-dark w-100">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">
+                <a href="?SortColumn=FullName&SortDescending=@(!Model.SortDescending)">
+                    ФИО @if (Model.SortColumn == "FullName")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+            <th scope="col">
+                <a href="?SortColumn=PhoneNumber&SortDescending=@(!Model.SortDescending)">
+                    Телефон @if (Model.SortColumn == "PhoneNumber")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Clients != null && Model.Clients.Any())
+        {
+            @foreach (var client in Model.Clients)
+            {
+                <tr data-id="@client.Id" class="table-row" onclick="selectRow(this)">
+                    <td><input type="checkbox" name="SelectedClientIds" value="@client.Id" /></td>
+                    <td>@client.Name</td>
+                    <td>@client.PhoneNumber</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">Клиенты не найдены</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    let allClients = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/Clients?handler=AllClients')
+            .then(response => response.json())
+            .then(data => {
+                allClients = data;
+                updateClientTable(allClients);
+                updateButtons();
+            })
+            .catch(error => console.error('Ошибка при загрузке клиентов:', error));
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const searchQuery = this.value.trim().toLowerCase();
+        console.log('Search query:', searchQuery);
+
+        const filteredClients = allClients.filter(client =>
+            client.name.toLowerCase().includes(searchQuery) ||
+            client.phoneNumber.toLowerCase().includes(searchQuery)
+        );
+
+        updateClientTable(filteredClients);
+        updateButtons();
+    });
+
+    function updateClientTable(clients) {
+        const tbody = document.querySelector('.table tbody');
+        tbody.innerHTML = '';
+
+        if (clients.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3">Клиенты не найдены</td></tr>';
+            return;
+        }
+
+        clients.forEach(client => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-id', client.id);
+            row.classList.add('table-row');
+            row.onclick = () => selectRow(row);
+
+            row.innerHTML = `
+                <td><input type="checkbox" name="SelectedClientIds" value="${client.id}" /></td>
+                <td>${client.name}</td>
+                <td>${client.phoneNumber}</td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function selectRow(row) {
+        var checkbox = row.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
+        row.classList.toggle('selected', checkbox.checked);
+        updateButtons();
+    }
+
+    function updateButtons() {
+        var selectedCheckboxes = document.querySelectorAll('.table-row input[type="checkbox"]:checked');
+        var deleteButton = document.getElementById('deleteButton');
+        var editButton = document.getElementById('editButton');
+
+        if (selectedCheckboxes.length === 1) {
+            editButton.disabled = false;
+        } else {
+            editButton.disabled = true;
+        }
+
+        if (selectedCheckboxes.length > 0) {
+            deleteButton.disabled = false;
+        } else {
+            deleteButton.disabled = true;
+        }
+    }
+
+    document.getElementById('selectAllButton').addEventListener('click', function () {
+        var checkboxes = document.querySelectorAll('.table-row input[type="checkbox"]');
+        var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+            checkbox.closest('tr').classList.toggle('selected', checkbox.checked);
+        });
+
+        updateButtons();
+    });
+
+    function updateSelectedClientIds() {
+        var selectedCheckboxes = document.querySelectorAll('.table-row input[type="checkbox"]:checked');
+        var selectedClientIds = Array.from(selectedCheckboxes)
+            .map(cb => cb.value.trim())
+            .filter(id => id);
+        document.getElementById('SelectedClientIds').value = selectedClientIds.join(',');
+        console.log('Selected Client IDs:', selectedClientIds);
+    }
+
+    document.getElementById('deleteForm').addEventListener('submit', function () {
+        updateSelectedClientIds();
+    });
+
+    document.getElementById('editButton').addEventListener('click', function () {
+        var selectedCheckbox = document.querySelector('.table-row input[type="checkbox"]:checked');
+        if (selectedCheckbox) {
+            var clientId = selectedCheckbox.value;
+            window.location.href = '/EditClient?id=' + clientId;
+        }
+    });
+</script>

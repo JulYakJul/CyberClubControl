@@ -1,0 +1,195 @@
+﻿@page
+@model CybontrolX.Pages.ProductsModel
+@{
+    ViewData["Title"] = "Товары";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>@ViewData["Title"]</h1>
+    <a href="/ProductPayment" class="btn btn-primary">Купить товар</a>
+    <a href="/CreateProduct" class="btn btn-primary">Добавить товар</a>
+</div>
+
+<div class="d-flex align-items-center mb-3">
+    <input type="text" id="searchInput" class="form-control-search me-2" placeholder="Поиск по названию" />
+</div>
+
+<form id="deleteForm" method="post" asp-page-handler="DeleteProducts" class="d-flex align-items-center mb-4">
+    <input type="hidden" id="SelectedProductIds" name="SelectedProductIds" />
+    <button id="selectAllButton" type="button" class="btn btn-small btn-purple me-2">Выбрать все</button>
+    <button id="editButton" type="button" class="btn btn-small btn-purple me-2" disabled>Изменить</button>
+    <button id="deleteButton" type="submit" class="btn btn-small btn-danger" disabled>Удалить</button>
+</form>
+
+<table class="table table-dark w-100">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">
+                <a href="?SortColumn=Name&SortDescending=@(!Model.SortDescending)">
+                    Название @if (Model.SortColumn == "Name")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+            <th scope="col">
+                <a href="?SortColumn=PurchasePrice&SortDescending=@(!Model.SortDescending)">
+                    Цена закупки @if (Model.SortColumn == "PurchasePrice")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+            <th scope="col">
+                <a href="?SortColumn=SalePrice&SortDescending=@(!Model.SortDescending)">
+                    Цена продажи @if (Model.SortColumn == "SalePrice")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+            <th scope="col">
+                <a href="?SortColumn=Quantity&SortDescending=@(!Model.SortDescending)">
+                    Количество @if (Model.SortColumn == "Quantity")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Products != null && Model.Products.Any())
+        {
+            @foreach (var product in Model.Products)
+            {
+                <tr data-id="@product.Id" class="table-row" onclick="selectRow(this)">
+                    <td><input type="checkbox" name="SelectedProductIds" value="@product.Id" /></td>
+                    <td>@product.Name</td>
+                    <td>@product.PurchasePrice</td>
+                    <td>@product.SalePrice</td>
+                    <td>@product.Quantity</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">Продукты не найдены</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    let allProducts = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/Products?handler=AllProducts')
+            .then(response => response.json())
+            .then(data => {
+                allProducts = data;
+                updateProductTable(allProducts);
+                updateButtons();
+            })
+            .catch(error => console.error('Ошибка при загрузке товаров:', error));
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const searchQuery = this.value.trim().toLowerCase();
+        console.log('Search query:', searchQuery);
+
+        const filteredProducts = allProducts.filter(product =>
+            product.name.toLowerCase().includes(searchQuery)
+        );
+
+        updateProductTable(filteredProducts);
+        updateButtons();
+    });
+
+    function updateProductTable(products) {
+        const tbody = document.querySelector('.table tbody');
+        tbody.innerHTML = '';
+
+        if (products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">Продукты не найдены</td></tr>';
+            return;
+        }
+
+        products.forEach(product => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-id', product.id);
+            row.classList.add('table-row');
+            row.onclick = () => selectRow(row);
+
+            row.innerHTML = `
+                <td><input type="checkbox" name="SelectedProductIds" value="${product.id}" /></td>
+                <td>${product.name}</td>
+                <td>${product.purchasePrice}</td>
+                <td>${product.salePrice}</td>
+                <td>${product.quantity}</td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function selectRow(row) {
+        var checkbox = row.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
+        row.classList.toggle('selected', checkbox.checked);
+
+        updateButtons();
+    }
+
+    function updateButtons() {
+        var selectedCheckboxes = document.querySelectorAll('.table-row input[type="checkbox"]:checked');
+        var deleteButton = document.getElementById('deleteButton');
+        var editButton = document.getElementById('editButton');
+
+        if (selectedCheckboxes.length === 1) {
+            editButton.disabled = false;
+        } else {
+            editButton.disabled = true;
+        }
+
+        if (selectedCheckboxes.length > 0) {
+            deleteButton.disabled = false;
+        } else {
+            deleteButton.disabled = true;
+        }
+    }
+
+    document.getElementById('selectAllButton').addEventListener('click', function () {
+        var checkboxes = document.querySelectorAll('.table-row input[type="checkbox"]');
+        var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+            checkbox.closest('tr').classList.toggle('selected', checkbox.checked);
+        });
+
+        updateButtons();
+    });
+
+        function updateSelectedProductIds() {
+        var selectedCheckboxes = document.querySelectorAll('.table-row input[type="checkbox"]:checked');
+        var selectedProductIds = Array.from(selectedCheckboxes)
+            .map(cb => cb.value.trim())
+            .filter(id => id);
+        document.getElementById('SelectedProductIds').value = selectedProductIds.join(',');
+        console.log('Selected Product IDs:', selectedProductIds);
+    }
+    document.getElementById('deleteForm').addEventListener('submit', function () {
+        updateSelectedProductIds();
+    });
+
+    document.getElementById('editButton').addEventListener('click', function () {
+        var selectedCheckbox = document.querySelector('.table-row input[type="checkbox"]:checked');
+        if (selectedCheckbox) {
+            var productId = selectedCheckbox.value;
+            window.location.href = '/EditProduct?id=' + productId;
+        }
+    });
+</script>

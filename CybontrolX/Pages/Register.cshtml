@@ -1,0 +1,195 @@
+﻿@page
+@model CybontrolX.Pages.Auth.RegisterModel
+@using CybontrolX.DBModels
+@{
+	ViewData["Title"] = "Регистрация";
+	Layout = "_LoginLayout";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+	<div class="register-login-card" style="width: 40rem; background-color: #212529;">
+		<div class="card-body" style="color: white;">
+			<h2 class="card-title text-center mb-4">Регистрация</h2>
+			<form method="post">
+				<div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+
+				<div class="row gx-5 gy-3">
+					<div class="col-md-6">
+						<div class="mb-3">
+							<label asp-for="Input.Name" class="form-label">Имя</label>
+							<input asp-for="Input.Name" class="form-control" style="background-color: #343a40; color: white;" />
+							<span asp-validation-for="Input.Name" class="text-danger small"></span>
+						</div>
+						<div class="mb-3">
+							<label asp-for="Input.Surname" class="form-label">Фамилия</label>
+							<input asp-for="Input.Surname" class="form-control" style="background-color: #343a40; color: white;" />
+							<span asp-validation-for="Input.Surname" class="text-danger small"></span>
+						</div>
+						<div class="mb-3">
+							<label asp-for="Input.Patronymic" class="form-label">Отчество</label>
+							<input asp-for="Input.Patronymic" class="form-control" style="background-color: #343a40; color: white;" />
+							<span asp-validation-for="Input.Patronymic" class="text-danger small"></span>
+						</div>
+						<div class="mb-3">
+							<label asp-for="Input.PhoneNumber" class="form-label">Телефон</label>
+							<input asp-for="Input.PhoneNumber"
+								   class="form-control"
+								   style="background-color: #343a40; color: white;"
+								   pattern="^(\+7|8)\s\d{3}\s\d{3}\s\d{2}\s\d{2}$"
+								   maxlength="18"
+								   required />
+							<span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="mb-3">
+							<label asp-for="Input.UserName" class="form-label">Логин</label>
+							<input asp-for="Input.UserName" class="form-control" style="background-color: #343a40; color: white;" />
+							<span asp-validation-for="Input.UserName" class="text-danger small"></span>
+						</div>
+						<div class="mb-3">
+							<label asp-for="Input.Password" class="form-label">Пароль</label>
+							<div style="position: relative;">
+								<input asp-for="Input.Password" id="password" class="form-control"
+									   style="background-color: #343a40; color: white; padding-right: 35px;" />
+								<i id="togglePassword" class="fas fa-eye password-toggle-icon"></i>
+							</div>
+							<span asp-validation-for="Input.Password" class="text-danger small"></span>
+						</div>
+
+						<div class="mb-3">
+							<label asp-for="Input.ConfirmPassword" class="form-label">Подтверждение пароля</label>
+							<div style="position: relative;">
+								<input asp-for="Input.ConfirmPassword" id="confirmPassword" class="form-control"
+									   style="background-color: #343a40; color: white; padding-right: 35px;" />
+								<i id="toggleConfirmPassword" class="fas fa-eye password-toggle-icon"></i>
+							</div>
+							<span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+						</div>
+						<div class="mb-3">
+							<label asp-for="Input.Role" class="form-label">Должность</label>
+							<select asp-for="Input.Role" asp-items="Html.GetEnumSelectList<Role>().Select(item => new SelectListItem { Text = item.Text, Value = item.Value })" class="form-control" style="background-color: #343a40; color: white;">
+								<option value="">Укажите вашу должность</option>
+							</select>
+							<span asp-validation-for="Input.Role" class="text-danger small"></span>
+						</div>
+					</div>
+				</div>
+
+				<div class="d-grid mt-4">
+					<button type="submit" class="btn btn-primary">Регистрация</button>
+				</div>
+				<div class="text-center mt-4">
+					<a href="/Login" class="small" style="color: #7101fb;">Есть аккаунт? Войти</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const phoneInput = document.getElementById('Input_PhoneNumber');
+
+			phoneInput.value = '+7 ';
+
+			phoneInput.addEventListener('input', function (e) {
+				let value = e.target.value.replace(/\D/g, '');
+
+				value = value.slice(0, 11);
+
+				if (!value.startsWith('7')) {
+					value = '7' + value.slice(1);
+				}
+
+				if (value.length > 1) {
+					value = '+7 ' + value.slice(1);
+				}
+				if (value.length > 6) {
+					value = value.slice(0, 6) + ' ' + value.slice(6);
+				}
+				if (value.length > 10) {
+					value = value.slice(0, 10) + ' ' + value.slice(10);
+				}
+				if (value.length > 13) {
+					value = value.slice(0, 13) + ' ' + value.slice(13);
+				}
+
+				e.target.value = value;
+			});
+
+			phoneInput.addEventListener('keydown', function (e) {
+				const cursorPosition = e.target.selectionStart;
+
+				if ((e.keyCode === 8 || e.keyCode === 46) && cursorPosition <= 3) {
+					e.preventDefault();
+				}
+			});
+
+			phoneInput.addEventListener('paste', function (e) {
+				e.preventDefault();
+				const pasted = e.clipboardData.getData('text').replace(/\D/g, '');
+				const currentValue = phoneInput.value.replace(/\D/g, '');
+				const newValue = '+7 ' + (currentValue + pasted).slice(1, 11);
+				phoneInput.value = newValue;
+			});
+
+			const togglePassword = document.getElementById('togglePassword');
+			const passwordField = document.getElementById('password');
+
+			togglePassword.addEventListener('click', function () {
+				const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+				passwordField.setAttribute('type', type);
+
+				this.classList.toggle('fa-eye-slash');
+				this.classList.toggle('fa-eye');
+			});
+
+			const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+			const confirmPasswordField = document.getElementById('confirmPassword');
+
+			toggleConfirmPassword.addEventListener('click', function () {
+				const type = confirmPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+				confirmPasswordField.setAttribute('type', type);
+
+
+				this.classList.toggle('fa-eye-slash');
+				this.classList.toggle('fa-eye');
+			});
+		});
+	</script>
+}
+
+<style>
+	body {
+		margin: 0;
+		min-height: 100vh;
+		background: url('/images/BGLoginRegister.png') no-repeat center center fixed;
+		background-size: cover;
+	}
+
+	.form-control::placeholder {
+		color: #6c757d;
+		opacity: 0.5;
+	}
+
+	.form-control {
+		position: relative;
+	}
+
+	.password-toggle-icon {
+		position: absolute;
+		right: 10px;
+		top: 50%;
+		transform: translateY(-50%);
+		cursor: pointer;
+		color: #7101fb;
+	}
+</style>

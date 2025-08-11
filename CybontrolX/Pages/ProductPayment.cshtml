@@ -1,0 +1,254 @@
+﻿@page
+@model CybontrolX.Pages.ProductPaymentModel
+@{
+    ViewData["Title"] = "Оплата товаров";
+}
+
+@if (TempData["NotificationMessage"] != null)
+{
+    <div id="notificationPanel" class="notification-panel">
+        <div class="notification-content">
+            <span class="notification-text">@TempData["NotificationMessage"]</span>
+            <span class="notification-close" onclick="closeNotification()">&times;</span>
+        </div>
+        <div class="notification-slider"></div>
+    </div>
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2>Оплата товаров</h2>
+        <form method="post" asp-page-handler="ProcessPayment" onsubmit="return validateForm()">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group mb-3">
+                <label asp-for="EmployeeId" class="form-label">Сотрудник</label>
+                <select asp-for="EmployeeId" class="form-control" asp-items="Model.EmployeeList"></select>
+                <span asp-validation-for="EmployeeId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label">Поиск товаров</label>
+                <input type="text" class="form-control" id="productSearchInput" placeholder="Введите название товара" oninput="searchProducts(this.value)" />
+                <ul id="productSuggestions" class="suggestions-list"></ul>
+            </div>
+
+            <div id="selectedProductsContainer" class="mt-3"></div>
+
+
+            <div class="form-group mb-3">
+                <label class="form-label">Способ оплаты</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="YooKassa" checked>
+                    <label class="form-check-label">Онлайн (ЮКасса)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="Cash">
+                    <label class="form-check-label">Наличные</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Оплатить</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showNotification(event) {
+            localStorage.setItem('notificationShown', 'true');
+            displayNotification();
+        }
+
+        function closeNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            notificationPanel.classList.remove('visible');
+        }
+
+        function displayNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            if (!notificationPanel) return;
+
+            var slider = notificationPanel.querySelector('.notification-slider');
+            notificationPanel.classList.add('visible');
+
+            var duration = 5000;
+            var startTime = Date.now();
+            var endTime = startTime + duration;
+
+            function updateSlider() {
+                var now = Date.now();
+                var remainingTime = endTime - now;
+                var percentage = (remainingTime / duration) * 100;
+                slider.style.width = percentage + '%';
+                if (remainingTime > 0) {
+                    requestAnimationFrame(updateSlider);
+                } else {
+                    slider.style.width = '0%';
+                    closeNotification();
+                }
+            }
+            requestAnimationFrame(updateSlider);
+        }
+
+        window.onload = function () {
+            if (localStorage.getItem('notificationShown') === 'true') {
+                if (document.getElementById('notificationPanel')) {
+                    displayNotification();
+                }
+                localStorage.removeItem('notificationShown');
+            }
+        };
+
+        function validateForm() {
+            const quantityInputs = document.querySelectorAll('input[name^="ProductQuantities["]');
+            let hasSelectedProducts = false;
+
+            quantityInputs.forEach(input => {
+                if (parseInt(input.value) > 0) {
+                    hasSelectedProducts = true;
+                }
+            });
+
+            if (!hasSelectedProducts) {
+                alert('Выберите хотя бы один товар и укажите количество больше 0');
+                return false;
+            }
+
+            const employeeSelect = document.getElementById('EmployeeId');
+            if (employeeSelect.value === '0') {
+                alert('Выберите сотрудника');
+                return false;
+            }
+
+            return true;
+        }
+
+        let selectedProductIds = [];
+
+        function searchProducts(query) {
+            const suggestions = document.getElementById("productSuggestions");
+            suggestions.innerHTML = "";
+
+            if (!query.trim()) return;
+
+            fetch(`/ProductPayment?handler=SearchProducts&query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(products => {
+                    products.forEach(product => {
+                        if (selectedProductIds.includes(product.id)) return;
+
+                        const li = document.createElement("li");
+                        li.textContent = `${product.name} — ${product.salePrice}₽`;
+                        li.classList.add("suggestion-item");
+
+                        li.onclick = () => {
+                            addProductToSelection(product);
+                            suggestions.innerHTML = "";
+                            document.getElementById("productSearchInput").value = "";
+                        };
+
+                        suggestions.appendChild(li);
+                    });
+                });
+        }
+
+        function addProductToSelection(product) {
+            selectedProductIds.push(product.id);
+
+            const container = document.getElementById("selectedProductsContainer");
+            const productDiv = document.createElement("div");
+            productDiv.classList.add("selected-product", "mb-3", "p-2", "rounded", "custom-product-card");
+            productDiv.dataset.productId = product.id;
+
+            productDiv.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <input type="hidden" name="SelectedProducts" value="${product.id}" />
+                        <strong>${product.name}</strong> (${product.salePrice}₽)
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger remove-product"
+                            onclick="removeProduct('${product.id}')">
+                        &times;
+                    </button>
+                </div>
+            <div class="d-flex align-items-center">
+                <input class="form-control"
+                       name="ProductQuantities[${product.id}]"
+                       type="number"
+                       min="1"
+                       max="${product.quantity}"
+                       value="1"
+                       style="width: 80px; margin-right: 16px;" />
+                <small class="text-muted">Доступно: ${product.quantity}</small>
+            </div>
+
+            `;
+
+            container.appendChild(productDiv);
+        }
+
+        function removeProduct(productId) {
+            selectedProductIds = selectedProductIds.filter(id => id != productId);
+
+            const productElement = document.querySelector(`.selected-product[data-product-id="${productId}"]`);
+            if (productElement) {
+                productElement.remove();
+            }
+        }
+    </script>
+}
+
+
+<style>
+    .suggestions-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border: 1px solid #7101fb;
+        background: #292e34;
+        position: absolute;
+        z-index: 1000;
+    }
+
+        .suggestions-list li {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+            .suggestions-list li:hover {
+                background-color: #3c444e;
+            }
+
+    .custom-product-card {
+        background-color: #292e34;
+        border: none;
+        color: white;
+        width: 230px;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+
+        .custom-product-card input,
+        .custom-product-card small {
+            color: white;
+        }
+
+    .remove-product {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        font-size: 20px;
+        line-height: 1;
+        text-align: center;
+    }
+
+    .custom-product-card input[type="number"] {
+        background-color: #1e1e1e;
+        border: 1px solid #7300ff;
+        color: white;
+    }
+
+</style>

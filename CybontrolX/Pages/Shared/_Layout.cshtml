@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CybolX</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CybontrolX.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.0/main.min.css" rel="stylesheet" />
+</head>
+<body class="bg-main">
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="navbar navbar-expand-sm navbar-light bg-sidebar flex-column align-items-start p-3" style="min-width: 200px;">
+            <a class="navbar-brand" asp-area="" asp-page="/Clients">CybolX</a>
+            <ul class="navbar-nav flex-column w-100">
+                <li class="nav-item w-100">
+                    <a class="nav-link" asp-area="" asp-page="/Clients">Клиенты</a>
+                </li>
+                <li class="nav-item w-100">
+                    <a class="nav-link" asp-area="" asp-page="/Products">Товары</a>
+                </li>
+                <li class="nav-item w-100">
+                    <a class="nav-link" asp-area="" asp-page="/ClubStaff">Сотрудники</a>
+                </li>
+                <li class="nav-item w-100">
+                    <a class="nav-link" asp-area="" asp-page="/DutyCalendar">График дежурств</a>
+                </li> 
+                <li class="nav-item w-100">
+                    <a class="nav-link" asp-area="" asp-page="/Sessions">Сессии</a>
+                </li>
+                <li class="nav-item w-100">
+                    <a class="nav-link" asp-area="" asp-page="/Computers">Компьютеры</a>
+                </li>
+                <li class="nav-item w-100">
+                    <a class="nav-link" asp-area="" asp-page="/Tariffs">Тарифы</a>
+                </li>
+                <li class="nav-item w-100">
+                    <a class="nav-link" asp-area="" asp-page="/Reports">Отчёты</a>
+                </li>
+                <li class="nav-item w-100">
+                    <a class="nav-link" asp-area="" asp-page="/Chat">AI чат</a>
+                </li>
+
+                <li class="nav-item w-100">
+                    <form method="post" asp-page="/Login" asp-page-handler="Logout">
+                        <button type="submit" class="nav-link btn btn-link text-white w-100 text-start">
+                            Выход
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid p-3">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
