@@ -1,0 +1,186 @@
+﻿@page
+@model CybontrolX.Pages.CreateSessionModel
+@{
+    ViewData["Title"] = "Забронировать компьютер";
+}
+
+@if (TempData["NotificationMessage"] != null)
+{
+    <div id="notificationPanel" class="notification-panel">
+        <div class="notification-content">
+            <span class="notification-text">@TempData["NotificationMessage"]</span>
+            <span class="notification-close" onclick="closeNotification()">&times;</span>
+        </div>
+        <div class="notification-slider"></div>
+    </div>
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2>Забронировать компьютер</h2>
+        <form method="post" asp-page-handler="CreateSession" onsubmit="showNotification(event)">
+            <div class="form-group mb-3">
+                <label class="form-label">Поиск клиента по телефону</label>
+                <input type="text" asp-for="ExistingClientPhoneNumber" class="form-control" placeholder="Введите номер телефона" oninput="searchClients(this.value)" />
+                <ul id="clientSuggestions" class="suggestions-list"></ul>
+            </div>
+
+            <div class="form-group mb-3 new-client-field">
+                <label class="form-label">Создать нового клиента</label>
+                <input type="text" asp-for="NewClientFullName" class="form-control" placeholder="ФИО нового клиента" />
+                <span asp-validation-for="NewClientFullName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 new-client-field">
+                <input type="text" asp-for="NewClientPhoneNumber" class="form-control" placeholder="Телефон нового клиента" />
+                <span asp-validation-for="NewClientPhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Session.ComputerId" class="form-label">Компьютер</label>
+                <select asp-for="Session.ComputerId" class="form-control" asp-items="Model.ComputerList"></select>
+                <span asp-validation-for="Session.ComputerId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Session.EmployeeId" class="form-label">Сотрудник</label>
+                <select asp-for="Session.EmployeeId" class="form-control" asp-items="Model.EmployeeList"></select>
+                <span asp-validation-for="Session.EmployeeId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">Тарифы</label>
+                @foreach (var tariff in Model.Tariffs)
+                {
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="SelectedTariffs" value="@tariff.Id" class="form-check-input" />
+                        <label class="form-check-label">
+                            @tariff.Name - @tariff.Price руб. - @(tariff.SessionTime.TotalHours) ч.
+                        </label>
+                        <input type="number" name="TariffQuantities[@tariff.Id]" value="1" min="1" class="form-control" style="width: 80px; display: inline-block;" />
+                    </div>
+                }
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">Способ оплаты</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="YooKassa" checked>
+                    <label class="form-check-label">Онлайн (ЮКасса)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="Cash">
+                    <label class="form-check-label">Наличные</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Оплатить</button>
+        </form>
+
+        <form id="paymentForm" method="post" asp-page-handler="CreatePayment">
+            <input type="hidden" asp-for="Session.Id" />
+            <input type="hidden" asp-for="SelectedTariffs" />
+            <input type="hidden" asp-for="TariffQuantities" />
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showNotification(event) {
+            localStorage.setItem('notificationShown', 'true');
+            displayNotification();
+        }
+
+        function closeNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            notificationPanel.classList.remove('visible');
+        }
+
+                function displayNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            if (!notificationPanel) return;
+
+            var slider = notificationPanel.querySelector('.notification-slider');
+            notificationPanel.classList.add('visible');
+
+            var duration = 5000;
+            var startTime = Date.now();
+            var endTime = startTime + duration;
+
+            function updateSlider() {
+                var now = Date.now();
+                var remainingTime = endTime - now;
+                var percentage = (remainingTime / duration) * 100;
+                slider.style.width = percentage + '%';
+                if (remainingTime > 0) {
+                    requestAnimationFrame(updateSlider);
+                } else {
+                    slider.style.width = '0%';
+                    closeNotification();
+                }
+            }
+            requestAnimationFrame(updateSlider);
+        }
+
+                window.onload = function () {
+            if (localStorage.getItem('notificationShown') === 'true') {
+                if (document.getElementById('notificationPanel')) {
+                    displayNotification();
+                }
+                localStorage.removeItem('notificationShown');
+            }
+        };
+
+                function searchClients(phoneNumber) {
+            if (phoneNumber.length < 1) {
+                document.getElementById('clientSuggestions').innerHTML = '';
+                return;
+            }
+
+            fetch(`/CreateSession?handler=SearchClients&phoneNumber=${phoneNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    const suggestionsList = document.getElementById('clientSuggestions');
+                    suggestionsList.innerHTML = '';
+
+                    data.forEach(phone => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = phone;
+                        listItem.onclick = function () {
+                            document.getElementById('ExistingClientPhoneNumber').value = phone;
+                            suggestionsList.innerHTML = '';
+                        };
+                        suggestionsList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching clients:', error));
+        }
+
+            document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.querySelector("input[name='ExistingClientPhoneNumber']");
+            const newClientNameInput = document.querySelector("input[name='NewClientFullName']");
+            const newClientPhoneInput = document.querySelector("input[name='NewClientPhoneNumber']");
+            const newClientFields = document.querySelectorAll(".new-client-field");
+            const searchFieldGroup = document.querySelector(".form-group.mb-3:first-child");
+
+            function toggleFields() {
+                const searchValue = searchInput.value.trim();
+                const newNameValue = newClientNameInput.value.trim();
+                const newPhoneValue = newClientPhoneInput.value.trim();
+
+                if (searchValue.length > 0) {
+                    newClientFields.forEach(field => field.style.display = "none");
+                } else {
+                    newClientFields.forEach(field => field.style.display = "");
+                }
+
+                if (newNameValue.length > 0 || newPhoneValue.length > 0) {
+                    searchFieldGroup.style.display = "none";
+                } else {
+                    searchFieldGroup.style.display = "";
+                }
+            }
+
+            searchInput.addEventListener("input", toggleFields);
+            newClientNameInput.addEventListener("input", toggleFields);
+            newClientPhoneInput.addEventListener("input", toggleFields);
+        });
+
+    </script>
+}

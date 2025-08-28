@@ -1,0 +1,44 @@
+﻿@page
+@model CybontrolX.Pages.EditTariffModel
+@{
+    ViewData["Title"] = "Редактирование тарифа";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2>@ViewData["Title"]</h2>
+        <form method="post">
+            <input type="hidden" asp-for="Tariff.Id" />
+
+            <div class="form-group mb-3">
+                <label for="Name" class="form-label">Название тарифа:</label>
+                <input type="text" asp-for="Tariff.Name" class="form-control" required />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="SessionTime" class="form-label">Время сессии (в часах):</label>
+                <input type="number" asp-for="SessionTime" step="0.01" class="form-control" required />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Days" class="form-label">Дни недели:</label>
+                <select asp-for="SelectedDays" class="form-select" multiple required>
+                    <option value="Monday">Понедельник</option>
+                    <option value="Tuesday">Вторник</option>
+                    <option value="Wednesday">Среда</option>
+                    <option value="Thursday">Четверг</option>
+                    <option value="Friday">Пятница</option>
+                    <option value="Saturday">Суббота</option>
+                    <option value="Sunday">Воскресенье</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Price" class="form-label">Цена тарифа:</label>
+                <input type="number" asp-for="Tariff.Price" step="0.01" class="form-control" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Сохранить изменения</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,189 @@
+﻿@page
+@model CybontrolX.Pages.CreateEditDutyCalendarModel
+@using CybontrolX.DBModels
+@{
+    ViewData["Title"] = "Составление графика дежурств";
+
+    var shiftTypes = new Dictionary<string, string> {
+        { "Night", "Ночное" },
+        { "Day", "Дневное" },
+        { "Other", "Другое" }
+    };
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2 class="mb-4">Составление графика дежурств</h2>
+
+        <form method="post">
+            @if (!string.IsNullOrEmpty(Model.WarningMessage))
+            {
+                <div class="alert alert-warning" role="alert">
+                    @Model.WarningMessage
+                </div>
+            }
+
+            <div class="form-group mb-3">
+                <label for="EmployeeId" class="form-label">Выберите сотрудника:</label>
+                <select asp-for="EmployeeId" class="form-control" id="EmployeeId" required asp-items="@(new SelectList(Model.Employees, "Id", "Surname"))" >
+                    <option value="">Выберите сотрудника</option>
+                </select>
+                <span asp-validation-for="EmployeeId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="EmployeeId" class="form-label">Выберите тип смены:</label>
+                <select asp-for="SelectedShiftType" class="form-control" id="shiftTypeSelect">
+                    @foreach (var item in shiftTypes)
+                    {
+                        if (Model.SelectedShiftType.ToString() == item.Key)
+                        {
+                            <option value="@item.Key" selected>@item.Value</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Key">@item.Value</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label">Выберите даты и время дежурств:</label>
+                <input type="text" id="dutyDates" name="DutyDates" class="form-control visually-hidden" value="@Model.DutyDates" required />
+                @* <input type="text" id="dutyDates" name="DutyDates" class="form-control" value="@Model.DutyDates" required /> *@
+                <span asp-validation-for="DutyDates" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ShiftStart" class="form-label">Начало смены:</label>
+                <input type="time" asp-for="ShiftStart" class="form-control" id="ShiftStart" required />
+                <span asp-validation-for="ShiftStart" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="ShiftEnd" class="form-label">Конец смены:</label>
+                <input type="time" asp-for="ShiftEnd" class="form-control" id="ShiftEnd" required />
+                <span asp-validation-for="ShiftEnd" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <script>
+        let flatpickrInstance = null;
+        let currentEmployeeId = 0;
+        let currentShiftType = 'Day';
+
+        const shiftTimes = {
+            Night: { start: "21:00", end: "08:00" },
+            Day: { start: "08:00", end: "21:00" },
+            Other: { start: "10:00", end: "22:00" }
+        };
+
+        function initializeFlatpickr(dates = []) {
+            if (flatpickrInstance) {
+                flatpickrInstance.destroy();
+            }
+                    flatpickrInstance = flatpickr("#dutyDates", {
+            mode: "multiple",
+            dateFormat: "Y-m-d",
+            locale: "ru",
+            inline: true,
+            defaultDate: dates.length > 0 ? dates : null
+        });
+
+        }
+
+        async function updateDutyDatesByShiftType(shiftType, employeeId) {
+            currentShiftType = shiftType;
+            currentEmployeeId = employeeId;
+
+            initializeFlatpickr([]);
+
+            document.getElementById('dutyDates').value = '';
+
+            if (!employeeId) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `/CreateEditDutyCalendar?handler=GetDutyDatesByShiftType&shiftType=${shiftType}&employeeId=${employeeId}`,
+                    { headers: { 'X-Requested-With': 'XMLHttpRequest' } }
+                );
+
+                const data = await response.json();
+                initializeFlatpickr(data.dutyDates ? data.dutyDates.split(',') : []);
+
+                if (shiftTimes[shiftType]) {
+                    document.getElementById('ShiftStart').value = shiftTimes[shiftType].start;
+                    document.getElementById('ShiftEnd').value = shiftTimes[shiftType].end;
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке дат:', error);
+                initializeFlatpickr([]);
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const dutyDatesFromModel = @Html.Raw(Json.Serialize(
+            string.IsNullOrEmpty(Model.DutyDates) ? new string[0] : Model.DutyDates.Split(',')
+        ));
+
+            initializeFlatpickr(dutyDatesFromModel);
+
+            const shiftSelect = document.getElementById('shiftTypeSelect');
+            const employeeSelect = document.getElementById('EmployeeId');
+            const form = document.querySelector('form');
+
+            const initialShiftType = shiftSelect.value;
+            const initialEmployeeId = employeeSelect.value;
+
+            if (shiftTimes[initialShiftType]) {
+                document.getElementById('ShiftStart').value = shiftTimes[initialShiftType].start;
+                document.getElementById('ShiftEnd').value = shiftTimes[initialShiftType].end;
+            }
+
+            shiftSelect.addEventListener('change', function() {
+                const newShiftType = this.value;
+                updateDutyDatesByShiftType(newShiftType, currentEmployeeId);
+            });
+
+            employeeSelect.addEventListener('change', function() {
+                const newEmployeeId = this.value;
+                updateDutyDatesByShiftType(currentShiftType, newEmployeeId);
+            });
+
+            form.addEventListener('submit', function(e) {
+                if (!employeeSelect.value) {
+                    e.preventDefault();
+                    alert('Пожалуйста, выберите сотрудника.');
+                    return;
+                }
+
+                if (!flatpickrInstance.selectedDates || flatpickrInstance.selectedDates.length === 0) {
+                    e.preventDefault();
+                    alert('Пожалуйста, выберите даты дежурств.');
+                    return;
+                }
+
+                const selectedDates = flatpickrInstance.selectedDates.map(date =>
+                    flatpickrInstance.formatDate(date, 'Y-m-d')
+                );
+                document.getElementById('dutyDates').value = selectedDates.join(',');
+            });
+
+            if (initialEmployeeId) {
+                updateDutyDatesByShiftType(initialShiftType, initialEmployeeId);
+            }
+        });
+    </script>
+}

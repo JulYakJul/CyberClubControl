@@ -1,0 +1,26 @@
+﻿@page
+@model CybontrolX.Pages.EditClientModel
+@{
+    ViewData["Title"] = "Изменить клиента";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2>Изменить клиента</h2>
+        <form id="editClientForm" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="EditClient.Id" />
+            <div class="form-group mb-3">
+                <label asp-for="EditClient.Name" class="form-label">ФИО клиента</label>
+                <input asp-for="EditClient.Name" class="form-control" />
+                <span asp-validation-for="EditClient.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-4">
+                <label asp-for="EditClient.PhoneNumber" class="form-label">Телефон</label>
+                <input asp-for="EditClient.PhoneNumber" class="form-control" />
+                <span asp-validation-for="EditClient.PhoneNumber" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Изменить</button>
+        </form>
+    </div>
+</div>

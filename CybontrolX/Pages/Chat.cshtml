@@ -1,0 +1,36 @@
+﻿@page
+@model CybontrolX.Pages.ChatModel
+@{
+    ViewData["Title"] = "ИИ-Ассистент";
+}
+
+<h1 style="text-align: center;">ИИ-Ассистент</h1>
+
+<form method="post" class="chat-form">
+    <textarea asp-for="UserPrompt" placeholder="Введите вопрос..." class="chat-input"></textarea>
+    <button type="submit" class="chat-button">Отправить</button>
+</form>
+
+<div class="chat-history">
+    @if (Model.DisplayChatHistory != null && Model.DisplayChatHistory.Count > 0)
+    {
+        @foreach (var message in Model.DisplayChatHistory)
+        {
+            <div class="chat-message">
+                @if (message.Role == Microsoft.Extensions.AI.ChatRole.Assistant)
+                {
+                    <strong>ИИ:</strong>
+                    @Html.Raw(message.Text)
+                }
+                else
+                {
+                    @message.Text
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="chat-message">Здесь будут ваши сообщения</div>
+    }
+</div>

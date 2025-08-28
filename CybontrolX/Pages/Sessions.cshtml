@@ -1,0 +1,227 @@
+﻿@page
+@model CybontrolX.Pages.SessionsModel
+@{
+    ViewData["Title"] = "Сессии";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+<div class="d-flex align-items-center mb-3">
+    <input type="text" id="searchInput" class="form-control-search me-2" placeholder="Поиск по имени клиента или IP компьютера" />
+</div>
+
+<form id="deleteForm" method="post" asp-page-handler="DeleteSessions" class="d-flex align-items-center mb-4">
+    <input type="hidden" id="SelectedSessionIds" name="SelectedSessionIds" />
+    <button id="selectAllButton" type="button" class="btn btn-small btn-purple me-2">Выбрать все</button>
+    <button id="deleteButton" type="submit" class="btn btn-small btn-danger" disabled>Закрыть сессию</button>
+</form>
+
+<table class="table table-dark w-100">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">
+                <a href="?SortColumn=ClientId&SortDescending=@(!Model.SortDescending)">
+                    Имя клиента @if (Model.SortColumn == "Name")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+            <th scope="col">
+                <a href="?SortColumn=ComputerId&SortDescending=@(!Model.SortDescending)">
+                    Компьютер @if (Model.SortColumn == "ComputerId")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+            <th scope="col">
+                <a href="?SortColumn=SessionStartTime&SortDescending=@(!Model.SortDescending)">
+                    Время начала @if (Model.SortColumn == "SessionStartTime")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+            <th scope="col">
+                <a href="?SortColumn=SessionEndTime&SortDescending=@(!Model.SortDescending)">
+                    Время конца @if (Model.SortColumn == "SessionEndTime")
+                    {
+                        <span>@(Model.SortDescending ? "▼" : "▲")</span>
+                    }
+                </a>
+            </th>
+            <th scope="col">Статус</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Sessions != null && Model.Sessions.Any())
+        {
+            @foreach (var session in Model.Sessions)
+            {
+                <tr data-id="@session.Id" class="table-row" onclick="selectRow(this)">
+                    <td><input type="checkbox" name="SelectedSessionIds" value="@session.Id" /></td>
+                    <td>@(session.Client?.Name ?? "Не указан")</td>
+                    <td>@(session.Computer?.ComputerIP ?? "Не указан")</td>
+                    <td class="utc-time" data-utc="@session.SessionStartTime.ToString("o")"></td>
+                    <td class="utc-time" data-utc="@(session.SessionEndTime?.ToString("o") ?? "")"></td>
+                    <td>@(session.IsActive ? "Активна" : "Завершена")</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">Сессии не найдены</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let timeElements = document.querySelectorAll(".utc-time");
+        timeElements.forEach(el => {
+            let utcDate = el.dataset.utc;
+            if (utcDate) {
+                let localDate = new Date(utcDate).toLocaleString();
+                el.textContent = localDate;
+            }
+        });
+    });
+
+    let allSessions = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/Sessions?handler=AllSessions')
+            .then(response => response.json())
+            .then(data => {
+                allSessions = data;
+                updateSessionTable(allSessions);
+                updateButtons();
+            })
+            .catch(error => console.error('Ошибка при загрузке сессий:', error));
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const searchQuery = this.value.trim().toLowerCase();
+        console.log('Search query:', searchQuery);
+
+        const filteredSessions = allSessions.filter(session =>
+            (session.clientName?.toLowerCase() || "").includes(searchQuery) ||
+            (session.computerIP?.toLowerCase() || "").includes(searchQuery)
+        );
+
+        updateSessionTable(filteredSessions);
+        updateButtons();
+    });
+
+    function updateSessionTable(sessions) {
+        const tbody = document.querySelector('.table tbody');
+        tbody.innerHTML = '';
+
+        if (sessions.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6">Сессии не найдены</td></tr>';
+            return;
+        }
+
+        sessions.forEach(session => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-id', session.id);
+            row.classList.add('table-row');
+            row.onclick = () => selectRow(row);
+
+            row.innerHTML = `
+                <td><input type="checkbox" name="SelectedSessionIds" value="${session.id}" /></td>
+                <td>${session.clientName || "Не указан"}</td>
+                <td>${session.computerIP || "Не указан"}</td>
+                <td class="utc-time" data-utc="${session.sessionStartTime}"></td>
+                <td class="utc-time" data-utc="${session.sessionEndTime || ""}"></td>
+                <td>${session.isActive ? "Активна" : "Завершена"}</td>
+            `;
+
+            tbody.appendChild(row);
+        });
+
+        let timeElements = document.querySelectorAll(".utc-time");
+        timeElements.forEach(el => {
+            let utcDate = el.dataset.utc;
+            if (utcDate) {
+                let localDate = new Date(utcDate).toLocaleString();
+                el.textContent = localDate;
+            }
+        });
+    }
+
+    function selectRow(row) {
+        var checkbox = row.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
+        row.classList.toggle('selected', checkbox.checked);
+
+        updateButtons();
+    }
+
+    function updateButtons() {
+        var selectedCheckboxes = document.querySelectorAll('.table-row input[type="checkbox"]:checked');
+        var deleteButton = document.getElementById('deleteButton');
+
+        if (selectedCheckboxes.length > 0) {
+            deleteButton.disabled = false;
+        } else {
+            deleteButton.disabled = true;
+        }
+    }
+
+    document.getElementById('selectAllButton').addEventListener('click', function () {
+        var checkboxes = document.querySelectorAll('.table-row input[type="checkbox"]');
+        var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+            checkbox.closest('tr').classList.toggle('selected', checkbox.checked);
+        });
+
+        updateButtons();
+    });
+
+    function updateSelectedSessionIds() {
+        var selectedCheckboxes = document.querySelectorAll('.table-row input[type="checkbox"]:checked');
+        var selectedSessionIds = Array.from(selectedCheckboxes)
+            .map(cb => cb.value.trim())
+            .filter(id => id);
+        document.getElementById('SelectedSessionIds').value = selectedSessionIds.join(',');
+        console.log('Selected Session IDs:', selectedSessionIds);
+    }
+
+        document.getElementById('deleteForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        updateSelectedSessionIds();
+
+        fetch(this.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: new URLSearchParams(new FormData(this))
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                return response.json();
+            }
+        })
+        .then(data => {
+            if (data) {
+                allSessions = data;
+                updateSessionTable(allSessions);
+                updateButtons();
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
+</script>

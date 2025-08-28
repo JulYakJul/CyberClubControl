@@ -1,0 +1,158 @@
+﻿@page
+@model CybontrolX.Pages.CreateEmployeeModel
+@{
+    ViewData["Title"] = "Добавить сотрудника";
+}
+
+<div id="notificationPanel" class="notification-panel">
+    <div class="notification-content">
+        <span class="notification-text">@Model.NotificationMessage</span>
+        <span class="notification-close" onclick="closeNotification()">&times;</span>
+    </div>
+    <div class="notification-slider"></div>
+</div>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2>Добавить сотрудника</h2>
+        <form method="post" asp-page-handler="AddEmployee" onsubmit="showNotification(event)">
+            <div class="form-group mb-3">
+                <label asp-for="NewEmployee.Name" class="form-label">Имя</label>
+                <input asp-for="NewEmployee.Name" class="form-control" />
+                <span asp-validation-for="NewEmployee.Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="NewEmployee.Surname" class="form-label">Фамилия</label>
+                <input asp-for="NewEmployee.Surname" class="form-control" />
+                <span asp-validation-for="NewEmployee.Surname" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="NewEmployee.Patronymic" class="form-label">Отчество</label>
+                <input asp-for="NewEmployee.Patronymic" class="form-control" />
+                <span asp-validation-for="NewEmployee.Patronymic" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="NewEmployee.PhoneNumber" class="form-label">Телефон</label>
+                <input asp-for="NewEmployee.PhoneNumber" class="form-control" />
+                <span asp-validation-for="NewEmployee.PhoneNumber" class="text-danger"></span>
+            </div>
+
+            @* <div class="form-group mb-3"> *@
+            @*     <label asp-for="NewEmployee.Status" class="form-label">Статус</label> *@
+            @*     <select asp-for="NewEmployee.Status" class="form-control"> *@
+            @*         <option value="работает">Работает</option> *@
+            @*         <option value="не работает">Не работает</option> *@
+            @*     </select> *@
+            @*     <span asp-validation-for="NewEmployee.Status" class="text-danger"></span> *@
+            @* </div> *@
+
+            <div class="form-group mb-3">
+                <label asp-for="NewEmployee.Role" class="form-label">Роль</label>
+                <select asp-for="NewEmployee.Role" class="form-control">
+                    <option value="управляющий">Управляющий</option>
+                    <option value="администратор">Администратор</option>
+                </select>
+                <span asp-validation-for="NewEmployee.Role" class="text-danger"></span>
+            </div>
+
+            <!-- DutySchedule -->
+            @* <div class="form-group mb-3"> *@
+            @*     <label asp-for="NewEmployee.DutyScheduleId" class="form-label">Расписание</label> *@
+            @*     <select asp-for="NewEmployee.DutyScheduleId" class="form-control"> *@
+            @*         <option value="">Не выбрано</option> *@
+            @*         @foreach (var schedule in Model.DutySchedules) *@
+            @*         { *@
+            @*             <option value="@schedule.Id">@schedule.DutyDate.ToShortDateString()</option> *@
+            @*         } *@
+            @*     </select> *@
+            @*     <span asp-validation-for="NewEmployee.DutyScheduleId" class="text-danger"></span> *@
+            @* </div> *@
+
+            <!-- ShiftStart (отображать только если выбран DutySchedule) -->
+            @* <div class="form-group mb-3" id="shiftStartField" style="display: none;"> *@
+            @*     <label asp-for="NewEmployee.ShiftStart" class="form-label">Начало смены</label> *@
+            @*     <input asp-for="NewEmployee.ShiftStart" class="form-control" type="datetime-local" /> *@
+            @*     <span asp-validation-for="NewEmployee.ShiftStart" class="text-danger"></span> *@
+            @* </div> *@
+
+            @* <!-- ShiftEnd (отображать только если выбран DutySchedule) --> *@
+            @* <div class="form-group mb-3" id="shiftEndField" style="display: none;"> *@
+            @*     <label asp-for="NewEmployee.ShiftEnd" class="form-label">Конец смены</label> *@
+            @*     <input asp-for="NewEmployee.ShiftEnd" class="form-control" type="datetime-local" /> *@
+            @*     <span asp-validation-for="NewEmployee.ShiftEnd" class="text-danger"></span> *@
+            @* </div> *@
+
+            <script>
+                // Скрыть или показать поля для ShiftStart и ShiftEnd в зависимости от выбора DutySchedule
+                document.querySelector('[name="NewEmployee.DutyScheduleId"]').addEventListener('change', function () {
+                    var shiftStartField = document.getElementById('shiftStartField');
+                    var shiftEndField = document.getElementById('shiftEndField');
+
+                    if (this.value) {
+                        shiftStartField.style.display = 'block';
+                        shiftEndField.style.display = 'block';
+                    } else {
+                        shiftStartField.style.display = 'none';
+                        shiftEndField.style.display = 'none';
+                    }
+                });
+            </script>
+
+            <button type="submit" class="btn btn-primary btn-block">Добавить сотрудника</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showNotification(event) {
+            event.preventDefault();
+            localStorage.setItem('notificationShown', 'true');
+            displayNotification();
+            setTimeout(function () {
+                document.querySelector('form').submit();
+            }, 500);
+        }
+
+        function closeNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            notificationPanel.classList.remove('visible');
+        }
+
+        function displayNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            var slider = notificationPanel.querySelector('.notification-slider');
+            notificationPanel.classList.add('visible');
+
+            var duration = 5000;
+            var startTime = Date.now();
+            var endTime = startTime + duration;
+
+            function updateSlider() {
+                var now = Date.now();
+                var remainingTime = endTime - now;
+                var percentage = (remainingTime / duration) * 100;
+                slider.style.width = percentage + '%';
+
+                if (remainingTime > 0) {
+                    requestAnimationFrame(updateSlider);
+                } else {
+                    slider.style.width = '0%';
+                    closeNotification();
+                }
+            }
+
+            requestAnimationFrame(updateSlider);
+        }
+
+        window.onload = function () {
+            if (localStorage.getItem('notificationShown') === 'true') {
+                displayNotification();
+                localStorage.removeItem('notificationShown');
+            }
+        }
+    </script>
+}

@@ -1,0 +1,121 @@
+﻿@page
+@model CybontrolX.Pages.TariffsModel
+@{
+    ViewData["Title"] = "Тарифы";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>@ViewData["Title"]</h1>
+        </div>
+    </div>
+
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6 d-flex align-items-center">
+            <form asp-page-handler="Search" method="get" class="d-flex align-items-center w-100" style="gap: 10px;">
+                <input type="text" name="searchTerm" value="@Request.Query["searchTerm"]" placeholder="Поиск тарифа"
+                       class="form-control-search me-2" style="flex-grow: 1;" />
+                <button type="submit" class="btn btn-small btn-purple">Поиск</button>
+            </form>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="d-flex justify-content-end">
+                <a asp-page="/CreateTariff" class="btn btn-primary me-2">
+                    <i class="fas fa-plus"></i> Добавить
+                </a>
+                <a id="editTariffBtn" class="btn btn-primary me-2" asp-page="/EditTariff" asp-route-id="">
+                    <i class="fas fa-edit"></i> Редактировать
+                </a>
+                <form method="post" class="d-inline">
+                    <input type="hidden" name="tariffId" id="selectedTariffId" />
+                    <button type="submit" asp-page-handler="Delete" class="btn btn-primary" id="deleteTariffBtn" disabled>
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (Model.Tariffs != null && Model.Tariffs.Any())
+        {
+            foreach (var tariff in Model.Tariffs)
+            {
+                <div class="col-md-4">
+                    <div class="card bg-dark text-white mb-4 tariff-card" data-id="@tariff.Id">
+                        <div class="card-header">@tariff.Name</div>
+                        <div class="card-body">
+                            <table class="table text-white table-borderless">
+                                <tr>
+                                    <th>Цена</th>
+                                    <td>@tariff.Price ₽</td>
+                                </tr>
+                                <tr>
+                                    <th>Длительность</th>
+                                    <td>@tariff.SessionTime.TotalHours ч</td>
+                                </tr>
+                                <tr>
+                                    <th>Дни</th>
+                                    <td>@Model.FormatDays(tariff.Days)</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-md-12">
+                <div class="alert alert-info" role="alert">
+                    Тарифы не найдены.
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let tariffCards = document.querySelectorAll(".tariff-card");
+        let deleteButton = document.getElementById("deleteTariffBtn");
+        let editButton = document.getElementById("editTariffBtn");
+        let selectedTariffId = document.getElementById("selectedTariffId");
+
+        tariffCards.forEach(card => {
+            card.addEventListener("click", function () {
+                if (this.classList.contains("selected")) {
+                    this.classList.remove("selected");
+                    this.style.border = "none";
+                    selectedTariffId.value = "";
+                    deleteButton.disabled = true;
+                    editButton.disabled = true;
+                    editButton.href = "#";
+                } else {
+                    tariffCards.forEach(c => {
+                        c.classList.remove("selected");
+                        c.style.border = "none";
+                    });
+
+                    this.classList.add("selected");
+                    this.style.border = "2px solid #7300ff";
+                    selectedTariffId.value = this.dataset.id;
+                    deleteButton.disabled = false;
+                    editButton.disabled = false;
+                    editButton.href = `/EditTariff?id=${this.dataset.id}`;
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    .tariff-card {
+        cursor: pointer;
+        transition: border 0.2s ease-in-out;
+    }
+
+    .input-group {
+        max-width: 300px;
+    }
+</style>

@@ -1,0 +1,106 @@
+﻿@page
+@model CybontrolX.Pages.CreateProductModel
+@{
+    ViewData["Title"] = "Добавить товар";
+}
+
+<div id="notificationPanel" class="notification-panel">
+    <div class="notification-content">
+        <span class="notification-text">@Model.NotificationMessage</span>
+        <span class="notification-close" onclick="closeNotification()">&times;</span>
+    </div>
+    <div class="notification-slider"></div>
+</div>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2>Добавить товар</h2>
+        <form method="post" asp-page-handler="AddProduct" onsubmit="showNotification(event)">
+            <div class="form-group mb-3">
+                <label asp-for="NewProduct.Name" class="form-label">Название товара</label>
+                <input asp-for="NewProduct.Name" class="form-control" />
+                <span asp-validation-for="NewProduct.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="NewProduct.PurchasePrice" class="form-label">Цена закупки</label>
+                <input asp-for="NewProduct.PurchasePrice" class="form-control" />
+                <span asp-validation-for="NewProduct.PurchasePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="NewProduct.SalePrice" class="form-label">Цена продажи</label>
+                <input asp-for="NewProduct.SalePrice" class="form-control" />
+                <span asp-validation-for="NewProduct.SalePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-4">
+                <label asp-for="NewProduct.Quantity" class="form-label">Количество</label>
+                <div class="input-group">
+                    <button type="button" class="btn btn-quantity" onclick="decrement()">-</button>
+                    <input asp-for="NewProduct.Quantity" id="quantityInput" class="quantity-input" value="1" />
+                    <button type="button" class="btn btn-quantity" onclick="increment()">+</button>
+                </div>
+                <span asp-validation-for="NewProduct.Quantity" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Добавить товар</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function increment() {
+            var input = document.getElementById('quantityInput');
+            input.value = parseInt(input.value, 10) + 1;
+        }
+
+        function decrement() {
+            var input = document.getElementById('quantityInput');
+            var value = parseInt(input.value, 10);
+            if (value > 1) {
+                input.value = value - 1;
+            }
+        }
+
+        function showNotification(event) {
+            localStorage.setItem('notificationShown', 'true');
+            displayNotification();
+        }
+
+        function closeNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            notificationPanel.classList.remove('visible');
+        }
+
+        function displayNotification() {
+            var notificationPanel = document.getElementById('notificationPanel');
+            var slider = notificationPanel.querySelector('.notification-slider');
+            notificationPanel.classList.add('visible');
+
+            var duration = 5000;
+            var startTime = Date.now();
+            var endTime = startTime + duration;
+
+            function updateSlider() {
+                var now = Date.now();
+                var remainingTime = endTime - now;
+                var percentage = (remainingTime / duration) * 100;
+                slider.style.width = percentage + '%';
+
+                if (remainingTime > 0) {
+                    requestAnimationFrame(updateSlider);
+                } else {
+                    slider.style.width = '0%';
+                    closeNotification();
+                }
+            }
+
+            requestAnimationFrame(updateSlider);
+        }
+
+        window.onload = function () {
+            if (localStorage.getItem('notificationShown') === 'true') {
+                displayNotification();
+                localStorage.removeItem('notificationShown');
+            }
+        }
+    </script>
+}

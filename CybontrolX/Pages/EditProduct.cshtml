@@ -1,0 +1,54 @@
+﻿@page
+@model CybontrolX.Pages.EditProductModel
+@{
+    ViewData["Title"] = "Изменить товар";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2>Изменить товар</h2>
+        <form id="editProductForm" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="EditProduct.Id" />
+            <div class="form-group mb-3">
+                <label asp-for="EditProduct.Name" class="form-label">Название товара</label>
+                <input asp-for="EditProduct.Name" class="form-control" />
+                <span asp-validation-for="EditProduct.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="EditProduct.PurchasePrice" class="form-label">Цена закупки</label>
+                <input asp-for="EditProduct.PurchasePrice" class="form-control" />
+                <span asp-validation-for="EditProduct.PurchasePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="EditProduct.SalePrice" class="form-label">Цена продажи</label>
+                <input asp-for="EditProduct.SalePrice" class="form-control" />
+                <span asp-validation-for="EditProduct.SalePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-4">
+                <label asp-for="EditProduct.Quantity" class="form-label">Количество</label>
+                <div class="input-group">
+                    <button type="button" class="btn btn-quantity" onclick="decrement()">-</button>
+                    <input asp-for="EditProduct.Quantity" id="quantityInput" class="quantity-input" value="1" />
+                    <button type="button" class="btn btn-quantity" onclick="increment()">+</button>
+                </div>
+                <span asp-validation-for="EditProduct.Quantity" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Обновить товар</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function increment() {
+        var input = document.getElementById('quantityInput');
+        input.value = parseInt(input.value) + 1;
+    }
+
+    function decrement() {
+        var input = document.getElementById('quantityInput');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+</script>

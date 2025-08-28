@@ -1,0 +1,77 @@
+﻿@page
+@model CybontrolX.Pages.CreateTariffModel
+@{
+    ViewData["Title"] = "Создание тарифа";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="form-container mb-5" style="width: 100%; max-width: 500px;">
+        <h2>@ViewData["Title"]</h2>
+        <form method="post">
+            <div class="form-group mb-3">
+                <label for="Name" class="form-label">Название тарифа:</label>
+                <input type="text" id="Name" name="Name" class="form-control" required />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="SessionTime" class="form-label">Время сессии (в часах):</label>
+                <input type="number" id="SessionTime" name="SessionTime" step="0.01" class="form-control" required />
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label">Дни недели:</label>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="Monday" name="Days" value="Monday">
+                            <label class="form-check-label" for="Monday">Понедельник</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="Tuesday" name="Days" value="Tuesday">
+                            <label class="form-check-label" for="Tuesday">Вторник</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="Wednesday" name="Days" value="Wednesday">
+                            <label class="form-check-label" for="Wednesday">Среда</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="Thursday" name="Days" value="Thursday">
+                            <label class="form-check-label" for="Thursday">Четверг</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="Friday" name="Days" value="Friday">
+                            <label class="form-check-label" for="Friday">Пятница</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="Saturday" name="Days" value="Saturday">
+                            <label class="form-check-label" for="Saturday">Суббота</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="Sunday" name="Days" value="Sunday">
+                            <label class="form-check-label" for="Sunday">Воскресенье</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Price" class="form-label">Цена тарифа:</label>
+                <input type="number" id="Price" name="Price" step="0.01" class="form-control" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Создать тариф</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,556 @@
+body {
+    margin: 0;
+    font-family: var(--bs-body-font-family);
+    font-size: 1.2rem;
+    font-weight: var(--bs-body-font-weight);
+    line-height: var(--bs-body-line-height);
+    color: var(--bs-body-color);
+    text-align: var(--bs-body-text-align);
+    background-color: var(--bs-body-bg);
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.bg-main {
+    background-color: #1E1E1E;
+    color: #fff;
+}
+
+.bg-sidebar {
+    background-color: #292e34;
+}
+
+.navbar {
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 200px;
+    background-color: #212529;
+    color: #fff;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.navbar {
+    background-color: #212529;
+}
+
+.navbar-brand {
+    padding-top: .3125rem;
+    padding-bottom: .3125rem;
+    margin-right: 1rem;
+    font-size: 3.2rem;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+}
+
+    .navbar a:hover {
+        color: #0077cc;
+    }
+
+.navbar .nav-link.active,
+.navbar .nav-link.show {
+    color: #fff;
+    background-color: #0077cc;
+}
+
+.container-fluid {
+    margin-left: 200px;
+    padding: 20px;
+    color: #fff;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+    background-color: #fff;
+    color: #1E1E1E;
+}
+
+    .footer a {
+        color: #1E1E1E;
+    }
+
+        .footer a:hover {
+            color: #0077cc;
+        }
+
+.navbar {
+    background-color: #212529;
+}
+
+    .navbar .nav-link {
+        color: #fff;
+    }
+
+        .navbar .nav-link:hover {
+            color: #0077cc;
+        }
+
+    .navbar .navbar-brand {
+        color: #7300FF;
+    }
+
+.navbar-light .navbar-nav .nav-link {
+    color: #fff;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #292e34;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.form-label {
+    font-size: 1.1rem;
+    color: #88959c;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 37px;
+    text-align: center;
+    padding: .25rem;
+    border: 1px solid #292e34;
+    border-radius: .25rem;
+    background-color: #292e34;
+    color: #ffffff;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+    .input-group .btn-quantity {
+        background-color: #292e34;
+        border: 1px solid #7101fb;
+        color: #ffffff;
+        border-radius: .25rem;
+        font-size: 1.25rem;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 2px;
+    }
+
+        .input-group .btn-quantity:hover {
+            background-color: #002244;
+            border-color: #6000d5;
+        }
+
+.form-container {
+    max-width: 600px;
+    width: 100%;
+    background-color: #1E1E1E;
+    padding: 20px;
+    border-radius: .5rem;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #ffffff;
+    background-color: #292e34;
+    background-clip: padding-box;
+    border: 1px solid #292e34;
+    border-radius: .5rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+    .form-control:focus {
+        color: #ffffff;
+        background-color: #292e34;
+        border-color: #7101fb;
+        box-shadow: 0 0 0 .2rem rgba(0, 0, 0, .125);
+    }
+
+.btn-primary {
+    color: #ffffff;
+    background-color: #7101fb;
+    border-color: #7200ff;
+    border-radius: .3rem;
+    margin-top: 15px;
+}
+
+/*Карточка товаров*/
+.card {
+    border: none;
+    border-radius: .375rem;
+}
+
+.card-body {
+    font-size: 1rem;
+}
+
+.product-info {
+    margin-bottom: 0.5rem;
+}
+
+.btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.delete-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
+
+.product-info {
+    flex: 1;
+    min-width: 150px;
+    margin-right: 1rem;
+    text-align: left;
+}
+
+    .product-info:last-child {
+        margin-right: 0;
+    }
+
+.d-flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card.bg-dark {
+    background-color: #292e34;
+}
+
+.card-text {
+    color: #B0B0B0;
+}
+
+.btn-danger {
+    margin-top: none;
+}
+
+.row {
+    margin: 0;
+}
+
+.notification-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #292e34;
+    color: #ffffff;
+    border: 2px solid #7101fb;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+    width: 300px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+    .notification-panel.visible {
+        display: flex;
+        opacity: 1;
+    }
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.notification-text {
+    flex: 1;
+    font-size: 1rem;
+}
+
+.notification-close {
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-left: 1rem;
+}
+
+.notification-slider {
+    height: 5px;
+    background-color: #7101fb;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: width 0.5s linear;
+}
+
+.text-danger {
+    --bs-text-opacity: 1;
+    color: rgb(118 111 181) !important;
+    font-size: 1rem;
+    margin-top: 0.1rem;
+    margin-bottom: 0;
+}
+
+/* Стили для контейнера таблицы */
+.table-container {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для таблицы */
+.table {
+    border-spacing: 0;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    .table th, .table td {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .table thead th {
+        background-color: #2a343e;
+        color: #ffffff;
+        position: relative;
+    }
+
+    .table tbody tr {
+        cursor: pointer;
+    }
+
+        .table tbody tr.selected {
+            background-color: #9a3535 !important;
+            color: #7101fb !important;
+        }
+
+        .table tbody tr:hover {
+            background-color: #495057;
+        }
+
+    .table td input[type="checkbox"] {
+        display: none;
+    }
+
+tbody, td, tfoot, th, thead, tr {
+    border-color: inherit;
+    border-style: none; 
+    border-width: 0;
+}
+
+/* Стили для индикаторов сортировки */
+.sort-indicator {
+    margin-left: 5px;
+    font-size: 0.8em;
+    color: #ffffff;
+}
+
+a {
+    color: #b3c4ff;
+    text-decoration: none;
+}
+
+/* Таблица товаров */
+/* Стиль для формы поиска */
+/*.form-control-search {
+    flex: 1;
+    max-width: 400px;
+    min-width: 200px;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #292e34;
+    border-radius: .25rem;
+}*/
+
+.form-control-search {
+    border-radius: 25px; /* Сильно скругленные углы */
+    width: 350px;
+    height: 40px;
+    border: none; /* Убираем границу */
+    padding: 10px 15px; /* Добавляем внутренние отступы */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Легкая тень для эффекта */
+    color: #fff;
+    background-color: #292e34;
+    outline: none; /* Убираем стандартный фокус */
+}
+
+    .form-control-search:focus {
+        border: 2px solid #7300FF; /* Фиолетовая граница при фокусе */
+        box-shadow: 0 0 10px rgba(128, 0, 128, 0.5); /* Легкое фиолетовое свечение */
+    }
+
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+}
+
+.btn-purple {
+    background-color: #7300FF;
+    color: white;
+    border: none;
+}
+
+    .btn-purple:hover {
+        background-color: #5a32a3;
+    }
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+.btn-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.table {
+    width: 100%;
+}
+
+.d-flex.align-items-center {
+    align-items: center;
+    justify-content: flex-start;
+}
+
+
+/*Login and Register*/
+.register-login-card {
+    width: 40rem;
+    background-color: #212529;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+
+/*Chat Page*/
+/* Стили формы */
+.chat-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.chat-input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #212529;
+    color: #ffffff;
+    font-size: 16px;
+    resize: none;
+    height: 100px;
+    box-sizing: border-box;
+}
+
+    .chat-input::placeholder {
+        color: #cccccc;
+    }
+
+.chat-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: #7101f9;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .chat-button:hover {
+        background-color: #5a00d3;
+    }
+
+/* История чата */
+.chat-history {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.chat-message {
+    background-color: #212529; /* Цвет панели */
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    color: #ffffff; /* Белый текст */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+    .chat-message strong {
+        color: #ffffff; /* Жирный текст теперь белый */
+        margin-right: 5px; /* Добавляем небольшой отступ после роли */
+    }
+
+/*Session*/
+.suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #7101fb;
+    background: #292e34;
+    position: absolute;
+    z-index: 1000;
+}
+
+.suggestions-list li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+    .suggestions-list li:hover {
+        background-color: #3c444e;
+    }
+
+/* Изменить цвет ссылки в сайдбаре при наведении */
+.bg-sidebar .nav-link:hover {
+    color: #7300ff !important;
+}

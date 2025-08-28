@@ -1,0 +1,49 @@
+﻿@page
+@model CybontrolX.Pages.ConfirmEmailModel
+@{
+    ViewData["Title"] = "Подтверждение email";
+    Layout = "_LoginLayout";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="register-login-card" style="width: 28rem; background-color: #212529;">
+        <div class="card-body" style="color: white;">
+            <h2 class="card-title text-center mb-4">Подтверждение аккаунта</h2>
+
+            <form method="post">
+                <input type="hidden" asp-for="Email" />
+
+                <div class="mb-3">
+                    <label asp-for="Code" class="form-label">Код из письма</label>
+                    <input asp-for="Code" class="form-control"
+                           style="background-color: #343a40; color: white;"
+                           autofocus />
+                    <span asp-validation-for="Code" class="text-danger small"></span>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary" asp-page-handler="">Подтвердить</button>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-link small" style="color: #7101fb;" asp-page-handler="ResendCode">
+                        Отправить код повторно
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: url('/images/BGLoginRegister.png') no-repeat center center fixed;
+        background-size: cover;
+    }
+</style>

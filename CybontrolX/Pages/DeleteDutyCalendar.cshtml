@@ -1,0 +1,35 @@
+﻿@page
+@model CybontrolX.Pages.DeleteDutyCalendarModel
+@using CybontrolX.DBModels
+
+@{
+    ViewData["Title"] = "Удаление графика дежурств";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="form-container mb-5 p-4 rounded shadow-sm" style="width: 100%; max-width: 500px; background-color: #212529;">
+        <h2 class="text-center mb-4">Удаление графика дежурств</h2>
+
+        <form method="post">
+            <div class="form-group mb-3">
+                <label for="EmployeeId" class="form-label">Выберите сотрудника:</label>
+                <select id="EmployeeId" name="EmployeeId" asp-items="@(new SelectList(Model.Employees, "Id", "Surname"))" required class="form-control">
+                    <option value="">Выберите сотрудника</option>
+                </select>
+            </div>
+
+            <div class="alert alert-dark text-center mb-3" role="alert">
+                Удаление графика происходит <strong>при увольнении сотрудника</strong>. Весь график будет удалён без возможности восстановления.
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100">Удалить график</button>
+        </form>
+
+        @if (ViewData["Message"] != null)
+        {
+            <div class="alert alert-info mt-3 text-center">
+                @ViewData["Message"]
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,37 @@
+﻿@page
+@model CybontrolX.Pages.DutyCalendarModel
+@{
+    ViewData["Title"] = "График дежурств";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+
+<h1>График дежурств</h1>
+
+@if (Model.IsManager())
+{
+    <div class="d-flex justify-content-start w-100 mb-3">
+        <a href="/CreateEditDutyCalendar" class="btn btn-primary me-2">Составить график</a>
+        <a href="/DeleteDutyCalendar" class="btn btn-primary">Удалить график</a>
+    </div>
+}
+
+<div id="calendar"></div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'ru',
+                events: @Html.Raw(Model.EventsJson),
+                displayEventTime: false
+            });
+
+            calendar.render();
+        });
+    </script>
+}
