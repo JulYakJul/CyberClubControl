@@ -16,7 +16,8 @@
 | Категория            | Технологии                                                                 |
 |----------------------|---------------------------------------------------------------------------|
 | **Язык программирования** | C#, .NET 8                                                      |
-| **База данных**       | PostgreSQL 16, Entity Framework Core                                   |
+| **База данных**       | PostgreSQL 16                                  |
+| **DAL**       | Entity Framework Core                                   |
 | **Тестирование**      | xUnit, Moq                                                     |
 | **ИИ-компоненты**     | Ollama, Gemma2                                               |
 | **Коммуникация**      | WebSocket (SignalR), REST API                                           |
@@ -27,7 +28,7 @@
 | **Контейнеризация**   | Docker                                                  |
 | **Логирование**       | Serilog                          |
 | **Безопасность**      | ASP.NET Core Identity, Cookie Auth, Role-Based Auth, CORS, HTTPS    |
-| **Работа с документами** | EPPlus (Excel), iTextSharp (PDF), DocumentFormat.OpenXml (Office) 
+| **Работа с документами** | EPPlus (Excel), iTextSharp (PDF), DocumentFormat.OpenXml (Office) |
 | **Фоновые задачи**   | IHostedService (SessionCleanupService)  |
 
 ## Функционал системы
@@ -45,13 +46,43 @@
 - **Формирование ежемесячной отчетности по продажам и зарплатам сострудников.**  
 - **Оплата наличными/картой (YooKassa).**  
 
-## Use-Case диаграмма. Роль Управляющий
+# Фрагменты интерфейса
+
+## Страница входа
+![Authentication](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Authentication.png)
+
+## Страница регистрации
+![Registration](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Registration.png)
+
+## Страница графика дежурств
+![Duty Scheduler](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Duty_scheduler.png)
+
+## Страница игровых сессий
+![Sessions](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Sessions.png)
+
+## Страница тарифов
+![Tariffs](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Tariffs.png)
+
+## Оплата
+![YooMoney](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/YooMoney.png)
+
+## Сгенерированный отчет XLSX
+![Report](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Report.png)
+
+## Клиентское приложение. Устанавливается на клиентские ПК в клубе для удалённой блокировки и разблокировки компьютера, слежения состояния ПК, а также поддержки клиентов с помощью ИИ
+![Utility](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Utility.png)
+
+## ИИ-агент для клиентов
+![AI Agent](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/AIAgent.png)
+
+# Use-Case диаграммы
+## Роль Управляющий
 ![Manager Use-case Diagram](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Manager%20Use-case%20diagram.png)
 
-## Use-Case диаграмма. Роль Администратор
+## Роль Администратор
 ![Admin Use-case Diagram](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Admin%20Use-case%20diagram.png)
 
-## Use-Case диаграмма. Роль Клиент
+## Роль Клиент
 ![Client Use-case Diagram](https://github.com/JulYakJul/CyberClubControl/raw/main/GitPictures/Client%20Use-case%20diagram.png)
 
 ## Результаты внедрения системы
